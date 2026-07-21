@@ -118,29 +118,19 @@
     font-size:1.08rem;
     color:#cfcabe;
   }
-  .hero-meta{
-    margin-top:40px;
-    display:flex;
-    flex-wrap:wrap;
-    gap:0;
-    border-top:1px solid var(--line);
-    border-left:1px solid var(--line);
+  .hero-grid{
+    display:grid;
+    grid-template-columns:1.5fr 1fr;
+    gap:56px;
+    align-items:start;
   }
-  .hero-meta div{
-    flex:1 1 140px;
-    padding:16px 18px;
-    border-right:1px solid var(--line);
-    border-bottom:1px solid var(--line);
+  .hero-status{margin-top:6px;}
+  @media (max-width:900px){
+    .hero-grid{grid-template-columns:1fr;}
+    .hero-status{margin-top:8px;}
   }
-  .hero-meta .label{
-    font-family:'IBM Plex Mono',monospace;
-    font-size:0.7rem;
-    color:var(--slate);
-    text-transform:uppercase;
-    letter-spacing:0.08em;
-    margin-bottom:6px;
-  }
-  .hero-meta .val{font-size:0.95rem;}
+
+  .navlinks a.active{color:var(--teal);}
 
   /* ---------- SECTION HEADS ---------- */
   section{padding:72px 0;border-bottom:1px solid var(--line);}
@@ -148,7 +138,7 @@
     display:flex;
     align-items:baseline;
     gap:16px;
-    margin-bottom:40px;
+    margin-bottom:16px;
   }
   .sec-num{
     font-family:'IBM Plex Mono',monospace;
@@ -159,6 +149,34 @@
     font-family:'Fraunces',serif;
     font-size:1.7rem;
     font-weight:500;
+  }
+  .cmd-line{
+    font-family:'IBM Plex Mono',monospace;
+    font-size:0.85rem;
+    color:var(--slate);
+    margin-bottom:36px;
+    display:flex;
+    align-items:center;
+    gap:8px;
+  }
+  .cmd-line .prompt{color:var(--teal);}
+  .cmd-line .blink-cursor{
+    display:inline-block;
+    width:7px;height:13px;
+    background:var(--teal);
+    animation:term-blink 1.1s steps(1) infinite;
+  }
+  .contact .cmd-line{justify-content:center;margin-bottom:20px;}
+
+  /* ---------- SCROLL REVEAL ---------- */
+  .reveal{
+    opacity:0;
+    transform:translateY(28px);
+    transition:opacity 0.8s ease, transform 0.8s ease;
+  }
+  .reveal.in-view{opacity:1;transform:none;}
+  @media (prefers-reduced-motion: reduce){
+    .reveal{opacity:1;transform:none;transition:none;}
   }
 
   /* ---------- WORK GRID (signature element) ---------- */
@@ -369,25 +387,72 @@
 
   .skill-grid{
     display:grid;
-    grid-template-columns:repeat(auto-fit,minmax(200px,1fr));
-    gap:1px;
-    background:var(--line);
-    border:1px solid var(--line);
+    grid-template-columns:repeat(auto-fit,minmax(240px,1fr));
+    gap:20px;
   }
   .skill-cell{
     background:var(--ink);
-    padding:22px;
+    border:1px solid var(--line);
+    border-radius:10px;
+    overflow:hidden;
+    transition:border-color 0.25s ease, transform 0.25s ease, box-shadow 0.25s ease;
   }
-  .skill-cell .label{
+  .skill-cell:hover{
+    border-color:rgba(79,157,138,0.5);
+    transform:translateY(-5px);
+    box-shadow:0 14px 28px rgba(0,0,0,0.35);
+  }
+  .term-bar{
+    display:flex;
+    align-items:center;
+    gap:10px;
+    padding:12px 16px;
+    border-bottom:1px solid var(--line);
+    background:rgba(236,232,225,0.02);
+  }
+  .term-dots{display:flex;gap:6px;flex-shrink:0;}
+  .term-dots span{width:8px;height:8px;border-radius:50%;display:block;}
+  .term-dots span:nth-child(1){background:var(--slate);opacity:0.5;}
+  .term-dots span:nth-child(2){background:var(--gold);opacity:0.75;}
+  .term-dots span:nth-child(3){background:var(--teal);}
+  .term-path{
     font-family:'IBM Plex Mono',monospace;
-    font-size:0.7rem;
-    color:var(--teal);
-    text-transform:uppercase;
-    letter-spacing:0.08em;
-    margin-bottom:10px;
+    font-size:0.72rem;
+    color:var(--slate);
+    letter-spacing:0.02em;
+    overflow:hidden;
+    text-overflow:ellipsis;
+    white-space:nowrap;
   }
-  .skill-cell ul{list-style:none;font-size:0.92rem;color:#cfcabe;}
-  .skill-cell li{padding:3px 0;}
+  .term-body{padding:16px 18px 18px;}
+  .term-line{
+    display:flex;
+    align-items:baseline;
+    gap:10px;
+    font-size:0.92rem;
+    color:#cfcabe;
+    padding:4px 0;
+    transition:color 0.2s ease, transform 0.2s ease;
+  }
+  .term-line .prompt{
+    font-family:'IBM Plex Mono',monospace;
+    color:var(--teal);
+    flex-shrink:0;
+    transition:color 0.2s ease;
+  }
+  .term-line:hover{color:var(--gold);transform:translateX(5px);}
+  .term-line:hover .prompt{color:var(--gold);}
+  .term-cursor{
+    display:inline-block;
+    width:7px;height:14px;
+    background:var(--teal);
+    margin-top:9px;
+    animation:term-blink 1.1s steps(1) infinite;
+  }
+  @keyframes term-blink{50%{opacity:0;}}
+  @media (prefers-reduced-motion: reduce){
+    .term-cursor, .blink-cursor{animation:none;}
+  }
 
   .pdf-preview{
     width:100%;
@@ -480,6 +545,76 @@
         }
     }
 
+  /* ---------- PDF MODAL VIEWER ---------- */
+  .pdf-modal{
+    display:none;
+    position:fixed;
+    inset:0;
+    z-index:200;
+    background:rgba(10,11,14,0.92);
+    padding:40px 20px;
+    overflow-y:auto;
+    align-items:flex-start;
+    justify-content:center;
+  }
+  .pdf-modal.open{display:flex;}
+  .pdf-modal-inner{
+    position:relative;
+    width:100%;
+    max-width:900px;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    gap:16px;
+  }
+  .pdf-modal-close{
+    position:sticky;
+    top:0;
+    align-self:flex-end;
+    width:44px;
+    height:44px;
+    border-radius:50%;
+    border:1px solid var(--line);
+    background:var(--ink);
+    color:var(--paper);
+    font-size:1.1rem;
+    cursor:pointer;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    transition:border-color 0.2s ease, color 0.2s ease;
+    z-index:5;
+  }
+  .pdf-modal-close:hover{border-color:var(--teal);color:var(--teal);}
+  .pdf-modal-pages{
+    display:flex;
+    flex-direction:column;
+    gap:14px;
+    width:100%;
+    align-items:center;
+  }
+  .pdf-modal-pages canvas{
+    width:100%;
+    height:auto;
+    max-width:900px;
+    background:white;
+    border-radius:6px;
+    box-shadow:0 12px 32px rgba(0,0,0,0.4);
+  }
+  .pdf-modal-pages img{
+    width:100%;
+    height:auto;
+    max-width:900px;
+    border-radius:6px;
+    box-shadow:0 12px 32px rgba(0,0,0,0.4);
+  }
+  .pdf-modal-status{
+    font-family:'IBM Plex Mono',monospace;
+    font-size:0.85rem;
+    color:var(--slate);
+  }
+  body.modal-lock{overflow:hidden;}
+
   /* ---------- FOOTER ---------- */
   footer.wrap{
     padding:32px 0 40px;
@@ -512,26 +647,46 @@
   </nav>
 </header>
 
-<section class="hero">
-  <div class="wrap">
-    <div class="eyebrow">Available for new roles</div>
-    <h1>Josef Marclein Deada Leonardo <em> Bachelor of Science in Computer Science</em></h1>
-    <p class="lede">Detail-oriented BS Computer Science graduate with experience in administrative support, including data entry, document management, records organization, and Microsoft Office applications. Skilled in technical troubleshooting, software installation, database management, and IT support. A fast learner with strong analytical, organizational, and communication skills, eager to contribute effectively in administrative and IT support roles.</p>
+<div class="pdf-modal" id="pdfModal">
+  <div class="pdf-modal-inner">
+    <button class="pdf-modal-close" id="pdfModalClose" aria-label="Close">✕</button>
+    <div class="pdf-modal-status" id="pdfModalStatus">Loading certificate…</div>
+    <div class="pdf-modal-pages" id="pdfModalPages"></div>
+  </div>
+</div>
 
-    <div class="hero-meta">
-      <div><div class="label">Based in</div><div class="val">Los Baños, Laguna</div></div>
-      <div><div class="label">Focus</div><div class="val">Editing, Admin Tasks &amp; Programming</div></div>
-      <div><div class="label">Experience</div><div class="val">3 years</div></div>
+<section class="hero">
+  <div class="wrap hero-grid">
+    <div class="hero-main">
+      <div class="eyebrow">Available for new roles</div>
+      <h1>Josef Marclein Deada Leonardo <em> Bachelor of Science in Computer Science</em></h1>
+      <p class="lede">Detail-oriented BS Computer Science graduate with experience in administrative support, including data entry, document management, records organization, and Microsoft Office applications. Skilled in technical troubleshooting, software installation, database management, and IT support. A fast learner with strong analytical, organizational, and communication skills, eager to contribute effectively in administrative and IT support roles.</p>
+    </div>
+
+    <div class="hero-status skill-cell">
+      <div class="term-bar">
+        <div class="term-dots"><span></span><span></span><span></span></div>
+        <div class="term-path">~/profile</div>
+      </div>
+      <div class="term-body">
+        <div class="term-line"><span class="prompt">&gt;</span>Based in — Los Baños, Laguna</div>
+        <div class="term-line"><span class="prompt">&gt;</span>College Degree — BS Computer Science, Major in Intelligent Systems</div>
+        <div class="term-line"><span class="prompt">&gt;</span>School — Laguna State Polytechnic University - Los Baños</div>
+        <div class="term-line"><span class="prompt">&gt;</span>Focus — Editing, Admin/Office Works &amp; Programming</div>
+        <div class="term-line"><span class="prompt">&gt;</span>Status — Open to new roles</div>
+        <span class="term-cursor" aria-hidden="true"></span>
+      </div>
     </div>
   </div>
 </section>
 
 <section id="work">
-  <div class="wrap">
+  <div class="wrap reveal">
     <div class="sec-head">
       <span class="sec-num mono">01</span>
       <h2 class="sec-title">Selected work</h2>
     </div>
+    <div class="cmd-line"><span class="prompt">$</span> cat ~/work/log<span class="blink-cursor" aria-hidden="true"></span></div>
 
     <div class="work-grid">
     <div class="entry" tabindex="0">
@@ -582,11 +737,12 @@
 </section>
 
 <section id="about">
-  <div class="wrap">
+  <div class="wrap reveal">
     <div class="sec-head">
       <span class="sec-num mono">02</span>
       <h2 class="sec-title">About</h2>
     </div>
+    <div class="cmd-line"><span class="prompt">$</span> whoami<span class="blink-cursor" aria-hidden="true"></span></div>
     <div class="about-grid">
       <div>
         <p>Josef Marclein Deada Leonardo is a Magna Cum Laude graduate of Laguna State Polytechnic University – Los Baños Campus, Batch 2026, having earned a Bachelor of Science in Computer Science, Major in Intelligent Systems. This academic distinction reflects not only his consistent excellence in coursework but also his genuine passion for understanding how technology can be harnessed to solve real-world problems.
@@ -602,38 +758,77 @@
 </section>
 
 <section id="skills">
-  <div class="wrap">
+  <div class="wrap reveal">
     <div class="sec-head">
       <span class="sec-num mono">03</span>
       <h2 class="sec-title">Skills</h2>
     </div>
+    <div class="cmd-line"><span class="prompt">$</span> ls ~/skills --all<span class="blink-cursor" aria-hidden="true"></span></div>
     <div class="skill-grid">
       <div class="skill-cell">
-        <div class="label">Frontend</div>
-        <ul><li>React</li><li>TypeScript</li><li>HTML</li><li>CSS</li><li>Python</li></ul>
+        <div class="term-bar">
+          <div class="term-dots"><span></span><span></span><span></span></div>
+          <div class="term-path">~/skills/frontend</div>
+        </div>
+        <div class="term-body">
+          <div class="term-line"><span class="prompt">&gt;</span>React</div>
+          <div class="term-line"><span class="prompt">&gt;</span>TypeScript</div>
+          <div class="term-line"><span class="prompt">&gt;</span>HTML</div>
+          <div class="term-line"><span class="prompt">&gt;</span>CSS</div>
+          <div class="term-line"><span class="prompt">&gt;</span>Python</div>
+          <span class="term-cursor" aria-hidden="true"></span>
+        </div>
       </div>
       <div class="skill-cell">
-        <div class="label">Backend</div>
-        <ul><li>Node.js</li><li>PostgreSQL</li><li>REST &amp; GraphQL APIs</li><li>PHP</li></ul>
+        <div class="term-bar">
+          <div class="term-dots"><span></span><span></span><span></span></div>
+          <div class="term-path">~/skills/backend</div>
+        </div>
+        <div class="term-body">
+          <div class="term-line"><span class="prompt">&gt;</span>Node.js</div>
+          <div class="term-line"><span class="prompt">&gt;</span>PostgreSQL</div>
+          <div class="term-line"><span class="prompt">&gt;</span>REST &amp; GraphQL APIs</div>
+          <div class="term-line"><span class="prompt">&gt;</span>PHP</div>
+          <span class="term-cursor" aria-hidden="true"></span>
+        </div>
       </div>
       <div class="skill-cell">
-        <div class="label">Product</div>
-        <ul><li>User research</li><li>Prototyping (Figma)</li><li>Design systems</li><li>Photo & Video Editing</li></ul>
+        <div class="term-bar">
+          <div class="term-dots"><span></span><span></span><span></span></div>
+          <div class="term-path">~/skills/product</div>
+        </div>
+        <div class="term-body">
+          <div class="term-line"><span class="prompt">&gt;</span>User research</div>
+          <div class="term-line"><span class="prompt">&gt;</span>Prototyping (Figma)</div>
+          <div class="term-line"><span class="prompt">&gt;</span>Design systems</div>
+          <div class="term-line"><span class="prompt">&gt;</span>Photo &amp; Video Editing</div>
+          <span class="term-cursor" aria-hidden="true"></span>
+        </div>
       </div>
       <div class="skill-cell">
-        <div class="label">Tools</div>
-        <ul><li>Canva</li><li>Capcut</li><li>Microsoft Office Applications</li><li>Social Media Manager</li></ul>
+        <div class="term-bar">
+          <div class="term-dots"><span></span><span></span><span></span></div>
+          <div class="term-path">~/skills/tools</div>
+        </div>
+        <div class="term-body">
+          <div class="term-line"><span class="prompt">&gt;</span>Canva</div>
+          <div class="term-line"><span class="prompt">&gt;</span>Capcut</div>
+          <div class="term-line"><span class="prompt">&gt;</span>Microsoft Office Applications</div>
+          <div class="term-line"><span class="prompt">&gt;</span>Social Media Manager</div>
+          <span class="term-cursor" aria-hidden="true"></span>
+        </div>
       </div>
     </div>
   </div>
 </section>
 
 <section id="certificates">
-  <div class="wrap">
+  <div class="wrap reveal">
     <div class="sec-head">
       <span class="sec-num mono">04</span>
       <h2 class="sec-title">Certificates</h2>
     </div>
+    <div class="cmd-line"><span class="prompt">$</span> ls ~/certificates --sort=date<span class="blink-cursor" aria-hidden="true"></span></div>
 
     <div class="cert-wrap">
 
@@ -658,7 +853,7 @@
       <div class="cert-scroll" id="certScroll">
 
         <!-- Certificate 1 -->
-        <div class="cert-card" tabindex="0">
+        <div class="cert-card img-cert" tabindex="0" data-img="https://raw.githubusercontent.com/josef-mdl/CERTIFICATIONS/main/b81665fe-18a1-4759-925c-7389d46fa5e2.jpg">
           <img src="https://raw.githubusercontent.com/josef-mdl/CERTIFICATIONS/main/b81665fe-18a1-4759-925c-7389d46fa5e2.jpg" alt="Magna Cum Laude">
           <div class="cert-body">
             <h4>Magna Cum Laude</h4>
@@ -667,7 +862,7 @@
         </div>
 
         <!-- Certificate 2 -->
-        <div class="cert-card" tabindex="0">
+        <div class="cert-card img-cert" tabindex="0" data-img="https://raw.githubusercontent.com/josef-mdl/CERTIFICATIONS/main/619a8390-dfea-41db-991f-d6146cce1215.jpg">
           <img src="https://raw.githubusercontent.com/josef-mdl/CERTIFICATIONS/main/619a8390-dfea-41db-991f-d6146cce1215.jpg" alt="CCS Service Award">
           <div class="cert-body">
             <h4>CCS Service Award</h4>
@@ -676,7 +871,7 @@
         </div>
 
         <!-- Certificate 3 -->
-        <div class="cert-card" tabindex="0">
+        <div class="cert-card img-cert" tabindex="0" data-img="https://raw.githubusercontent.com/josef-mdl/CERTIFICATIONS/main/3106d837-cb4f-4e78-9119-bfbb540e9763.jpg">
           <img src="https://raw.githubusercontent.com/josef-mdl/CERTIFICATIONS/main/3106d837-cb4f-4e78-9119-bfbb540e9763.jpg" alt="CCS Leadership Award">
           <div class="cert-body">
             <h4>CCS Leadership Award</h4>
@@ -685,7 +880,7 @@
         </div>
 
         <!-- Certificate 4 -->
-        <div class="cert-card" tabindex="0">
+        <div class="cert-card img-cert" tabindex="0" data-img="https://raw.githubusercontent.com/josef-mdl/CERTIFICATIONS/main/2c49663b-ab6d-4e5f-95df-78f454e56da8.jpg">
           <img src="https://raw.githubusercontent.com/josef-mdl/CERTIFICATIONS/main/2c49663b-ab6d-4e5f-95df-78f454e56da8.jpg" alt="CCS Proficiency">
           <div class="cert-body">
             <h4>Degree Proficiency Award</h4>
@@ -694,7 +889,7 @@
         </div>
 
         <!-- Certificate 5 -->
-        <div class="cert-card" tabindex="0">
+        <div class="cert-card img-cert" tabindex="0" data-img="https://raw.githubusercontent.com/josef-mdl/CERTIFICATIONS/main/1bacaa54-49d8-431d-bbc6-dca735cfb324.jpg">
           <img src="https://raw.githubusercontent.com/josef-mdl/CERTIFICATIONS/main/1bacaa54-49d8-431d-bbc6-dca735cfb324.jpg" alt="BSCS 2nd Best Thesis Paper">
           <div class="cert-body">
             <h4>BSCS 2nd Best Thesis Paper</h4>
@@ -702,7 +897,7 @@
           </div>
         </div>
 
-        <div class="cert-card" tabindex="0">
+        <div class="cert-card img-cert" tabindex="0" data-img="https://raw.githubusercontent.com/josef-mdl/CERTIFICATIONS/main/scanned_document%20(1)_page-0001.jpg">
           <img src="https://raw.githubusercontent.com/josef-mdl/CERTIFICATIONS/main/scanned_document%20(1)_page-0001.jpg" alt="BSCS 2nd Best Thesis Paper">
           <div class="cert-body">
             <h4>DOST Project LODIxR Certification</h4>
@@ -766,7 +961,8 @@
 </section>
 
 <section class="contact" id="contact">
-  <div class="wrap">
+  <div class="wrap reveal">
+    <div class="cmd-line"><span class="prompt">$</span> ping josef --connect<span class="blink-cursor" aria-hidden="true"></span></div>
     <h2>Let's build something worth using.</h2>
         <div class="contact-links">
             <!-- Email -->
@@ -901,6 +1097,8 @@ animate();
     import * as pdfjsLib from "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/4.4.168/pdf.min.mjs";
     pdfjsLib.GlobalWorkerOptions.workerSrc =
     "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/4.4.168/pdf.worker.min.mjs";
+
+    // ---- Thumbnails on each card ----
     const pdfCards = document.querySelectorAll(".pdf-cert");
     pdfCards.forEach(async card => {
         const pdfUrl = card.dataset.pdf;
@@ -919,10 +1117,130 @@ animate();
         }catch(err){
             console.error(err);
         }
-        card.onclick = () => {
-            window.open(card.dataset.view, "_blank");
+
+        // Open the full certificate inside the in-page modal
+        // (no download, no redirect to GitHub)
+        card.onclick = () => openPdfModal(pdfUrl);
+        card.onkeydown = (e) => {
+            if(e.key === "Enter" || e.key === " "){
+                e.preventDefault();
+                openPdfModal(pdfUrl);
+            }
         };
     });
+
+    // ---- Image certificate cards (open full image in the same modal) ----
+    const imgCards = document.querySelectorAll(".img-cert");
+    imgCards.forEach(card => {
+        const imgUrl = card.dataset.img;
+        card.onclick = () => openImageModal(imgUrl);
+        card.onkeydown = (e) => {
+            if(e.key === "Enter" || e.key === " "){
+                e.preventDefault();
+                openImageModal(imgUrl);
+            }
+        };
+    });
+
+    function openImageModal(imgUrl){
+        modalRenderToken++; // invalidate any in-flight PDF render
+        modalPages.innerHTML = "";
+        modalStatus.textContent = "";
+        const img = document.createElement("img");
+        img.src = imgUrl;
+        img.alt = "Certificate";
+        modalPages.appendChild(img);
+        modal.classList.add("open");
+        document.body.classList.add("modal-lock");
+    }
+
+    // ---- Modal viewer ----
+    const modal = document.getElementById("pdfModal");
+    const modalPages = document.getElementById("pdfModalPages");
+    const modalStatus = document.getElementById("pdfModalStatus");
+    const modalClose = document.getElementById("pdfModalClose");
+    let modalRenderToken = 0;
+
+    async function openPdfModal(pdfUrl){
+        const myToken = ++modalRenderToken;
+        modalPages.innerHTML = "";
+        modalStatus.textContent = "Loading certificate…";
+        modal.classList.add("open");
+        document.body.classList.add("modal-lock");
+
+        try{
+            const pdf = await pdfjsLib.getDocument(pdfUrl).promise;
+            for(let i = 1; i <= pdf.numPages; i++){
+                if(myToken !== modalRenderToken) return; // a newer cert was opened, abandon this render
+                const page = await pdf.getPage(i);
+                const viewport = page.getViewport({ scale: 1.8 });
+                const canvas = document.createElement("canvas");
+                canvas.width = viewport.width;
+                canvas.height = viewport.height;
+                const context = canvas.getContext("2d");
+                await page.render({ canvasContext: context, viewport }).promise;
+                modalPages.appendChild(canvas);
+            }
+            if(myToken === modalRenderToken){
+                modalStatus.textContent = "";
+            }
+        }catch(err){
+            console.error(err);
+            if(myToken === modalRenderToken){
+                modalStatus.textContent = "Unable to load this certificate right now.";
+            }
+        }
+    }
+
+    function closePdfModal(){
+        modal.classList.remove("open");
+        document.body.classList.remove("modal-lock");
+        modalRenderToken++; // invalidate any in-flight render
+        modalPages.innerHTML = "";
+    }
+
+    modalClose.addEventListener("click", closePdfModal);
+    modal.addEventListener("click", (e) => {
+        if(e.target === modal) closePdfModal();
+    });
+    document.addEventListener("keydown", (e) => {
+        if(e.key === "Escape" && modal.classList.contains("open")) closePdfModal();
+    });
+</script>
+
+<script>
+  // ---- Reveal sections as they scroll into view ----
+  const revealEls = document.querySelectorAll('.reveal');
+  if('IntersectionObserver' in window && revealEls.length){
+    const revealObserver = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if(entry.isIntersecting){
+          entry.target.classList.add('in-view');
+          revealObserver.unobserve(entry.target);
+        }
+      });
+    }, { threshold: 0.12, rootMargin: '0px 0px -60px 0px' });
+    revealEls.forEach(el => revealObserver.observe(el));
+  } else {
+    revealEls.forEach(el => el.classList.add('in-view'));
+  }
+
+  // ---- Highlight the nav link for the section currently in view ----
+  const navLinks = document.querySelectorAll('.navlinks a');
+  const trackedSections = document.querySelectorAll('section[id]');
+  if('IntersectionObserver' in window && trackedSections.length){
+    const navObserver = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if(entry.isIntersecting){
+          const id = entry.target.getAttribute('id');
+          navLinks.forEach(link => {
+            link.classList.toggle('active', link.getAttribute('href') === '#' + id);
+          });
+        }
+      });
+    }, { rootMargin: '-40% 0px -55% 0px', threshold: 0 });
+    trackedSections.forEach(sec => navObserver.observe(sec));
+  }
 </script>
 
 </body>
